@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业预览 - Sigma Education</title>
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --text-secondary: #666;
+            --border-color: #e8e8e8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 80px;
+        }
+
+        .header-nav {
+            background: #fff;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .back-link {
+            margin-bottom: 15px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        /* Banner */
+        .preview-banner {
+            background: #e6f7ff;
+            border-radius: 8px;
+            padding: 30px 40px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-banner h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .preview-banner h2 {
+            font-size: 24px;
+            font-weight: normal;
+            color: #555;
+        }
+
+        /* Info Grid */
+        .info-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .info-item {
+            font-size: 14px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        /* Layer Filter Bar (New) */
+        .layer-filter-bar {
+            background: #fff;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            height: 50px;
+            border-bottom: 1px solid #e8e8e8;
+            margin-bottom: 0;
+            /* Attach to action bar if desired, or keep spacing */
+            border-radius: 4px 4px 0 0;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 15px;
+            color: #333;
+        }
+
+        .layer-tabs {
+            display: flex;
+            height: 100%;
+        }
+
+        .layer-tab {
+            padding: 0 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            /* Dark text for light bg */
+            transition: all 0.3s;
+        }
+
+        .layer-tab:hover {
+            color: var(--primary-color);
+            background: #f5f5f5;
+        }
+
+        .layer-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: #1890ff;
+            background: #e6f7ff;
+            font-weight: bold;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            background: #404b5f;
+            color: white;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            height: 40px;
+            /* Make it slimmer since tabs are gone */
+            border-radius: 0;
+            /* Remove top radius if attached */
+        }
+
+        /* Question List */
+        .question-list {
+            background: #fff;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            min-height: 400px;
+        }
+
+        .question-card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .q-tags {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .tag-blue {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .tag-gray {
+            color: #999;
+        }
+
+        .q-content {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .q-footer {
+            text-align: right;
+        }
+
+        .btn-link {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .delete-q-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff4d4f;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        .footer-action {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 40px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 40px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header-nav">
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="#1890ff">
+                <circle cx="50" cy="50" r="45" stroke="#1890ff" stroke-width="5" fill="none" />
+                <path d="M30 50 L50 70 L80 30" stroke="#1890ff" stroke-width="8" fill="none" />
+            </svg>
+            兆涵科技 <span style="font-size: 14px; font-weight: normal; color: #666; margin-left: 5px;">Sigma
+                Education</span>
+        </div>
+        <div style="margin-left: auto;">
+            <button class="btn-primary" style="padding: 5px 15px; font-size: 13px;">新手教程</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="back-link" onclick="history.back()">← 返回 布置作业 / 预览</div>
+
+        <div class="preview-banner">
+            <h1 style="color: #fff; opacity: 0.3; font-size: 60px; position: absolute; top: -10px; left: 20px;">语文</h1>
+            <h1 style="position: relative; z-index: 2;">1月7日 作业</h1>
+        </div>
+
+        <div class="info-card">
+            <div class="info-item"><span class="info-label">类型:</span> 智能作业</div>
+            <div class="info-item"><span class="info-label">教材:</span> 统编版 (2016)</div>
+            <div class="info-item"><span class="info-label">班级:</span> 初一2班 等</div>
+            <div class="info-item"><span class="info-label">章节:</span> 10. 守株待兔</div>
+            <div class="info-item"><span class="info-label">截止时间:</span> 2026年1月7日 19:00</div>
+            <div class="info-item"><span class="info-label">总分:</span> 100</div>
+        </div>
+
+        <div class="layer-filter-bar">
+            <span class="filter-label">知识点掌握程度：</span>
+            <div class="layer-tabs">
+                <div class="layer-tab active" onclick="switchLayer(this, 5)">90%-100%</div>
+                <div class="layer-tab" onclick="switchLayer(this, 4)">75%-89%</div>
+                <div class="layer-tab" onclick="switchLayer(this, 3)">60%-74%</div>
+                <div class="layer-tab" onclick="switchLayer(this, 2)">40%-59%</div>
+                <div class="layer-tab" onclick="switchLayer(this, 1)">0%-39%</div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <div class="bar-title" id="barTitle">课后巩固 (20题) 100分</div>
+        </div>
+
+        <div class="question-list" id="questionContainer">
+            <!-- Content will be injected by JS -->
+        </div>
+    </div>
+
+    <div class="footer-action">
+        <button class="btn-outline">调整</button>
+        <button class="btn-primary">发布</button>
+    </div>
+
+    <script>
+        // Mock Data for each layer
+        const questionsDB = {
+            5: [ // 90-100% (Challenge)
+                { type: '填空题', diff: '挑战', content: '升国旗时，我们要注意 ______，双眼注视国旗。', answer: '立正' },
+                { type: '填空题', diff: '困难', content: '《守株待兔》这则寓言告诉我们的道理是 ______。', answer: '不应不劳而获' },
+                { type: '阅读理解', diff: '挑战', content: '请分析文中“兔走触株”中“走”字的含义及古今异义。', answer: '...' }
+            ],
+            4: [
+                { type: '填空题', diff: '困难', content: '五星红旗是我们的 ______。', answer: '国旗' },
+                { type: '选择题', diff: '中等', content: '下列词语中并没有错别字的一项是？', answer: 'A' },
+                { type: '填空题', diff: '中等', content: '宋人有耕者，田中有 ______。', answer: '株' }
+            ],
+            3: [
+                { type: '填空题', diff: '中等', content: '守株待兔的“株”意思是 ______。', answer: '树桩' },
+                { type: '选择题', diff: '容易', content: '农夫最后的结局是？', answer: '被嘲笑' }
+            ],
+            2: [
+                { type: '填空题', diff: '容易', content: '兔走触株，折颈而 ______。', answer: '死' },
+                { type: '选择题', diff: '基础', content: '这是一个什么故事？', answer: '寓言' }
+            ],
+            1: [
+                { type: '填空题', diff: '基础', content: '看图填空：图中有 ______ 只兔子。', answer: '一' },
+                { type: '选择题', diff: '基础', content: '兔子撞到了什么？', answer: '树桩' }
+            ]
+        };
+
+        function switchLayer(tabElement, layerIdx) {
+            // Update Tabs
+            document.querySelectorAll('.layer-tab').forEach(t => t.classList.remove('active'));
+            tabElement.classList.add('active');
+
+            // Render Questions
+            renderQuestions(layerIdx);
+
+            // Update Title (Simulated)
+            const count = questionsDB[layerIdx].length;
+            const score = count * 5; // Assume 5 pts each
+            document.getElementById('barTitle').textContent = `课后巩固 (${count}题) ${score}分`;
+        }
+
+        function renderQuestions(layerIdx) {
+            const container = document.getElementById('questionContainer');
+            const questions = questionsDB[layerIdx] || [];
+
+            let html = '';
+            if (questions.length === 0) {
+                html = '<div style="text-align:center; padding: 40px; color:#999;">暂无题目</div>';
+            } else {
+                questions.forEach((q, i) => {
+                    html += `
+                        <div class="question-card">
+                            <span class="delete-q-btn">× 删除</span>
+                            <div class="q-tags">
+                                <span class="tag tag-blue">${q.type}</span>
+                                <span class="tag tag-blue" style="background: #e6f7ff; color: #1890ff;">${q.diff}</span>
+                                <span class="tag tag-gray">文言文理解</span>
+                            </div>
+                            <div class="q-content">
+                                ${i + 1}. ${q.content}
+                            </div>
+                            <div class="q-footer">
+                                <span class="btn-link">参考答案</span>
+                                <span class="btn-link" style="margin-left: 20px;">答案解析</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+        }
+
+        // Init
+        renderQuestions(5);
+    </script>
+</body>
+
+</html>

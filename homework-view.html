@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业完成情况 - Sigma Education</title>
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --text-secondary: #666;
+            --border-color: #d9d9d9;
+            --header-bg: #3d4d66;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 40px;
+        }
+
+        /* 顶部导航 */
+        .header {
+            background: #fff;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            margin: 10px auto 10px auto;
+            max-width: 1200px;
+            padding: 0 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 作业信息卡片 */
+        .homework-info {
+            background: linear-gradient(135deg, #ffd4d4 0%, #ffe8cc 100%);
+            border-radius: 8px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .homework-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .homework-meta {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            gap: 20px;
+        }
+
+        .stats-box {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .stats-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .stats-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stats-value.completion {
+            color: #ff4d4f;
+        }
+
+        /* 层级Tab */
+        .layer-tabs {
+            background: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .layer-tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .layer-tab.layer-5 {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        .layer-tab.layer-5.active {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+
+        .layer-tab.layer-4 {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        .layer-tab.layer-4.active {
+            background: #52c41a;
+            color: white;
+            border-color: #52c41a;
+        }
+
+        .layer-tab.layer-3 {
+            background: #fffbe6;
+            color: #faad14;
+        }
+        .layer-tab.layer-3.active {
+            background: #faad14;
+            color: white;
+            border-color: #faad14;
+        }
+
+        .layer-tab.layer-2 {
+            background: #fff0f6;
+            color: #eb2f96;
+        }
+        .layer-tab.layer-2.active {
+            background: #eb2f96;
+            color: white;
+            border-color: #eb2f96;
+        }
+
+        .layer-tab.layer-1 {
+            background: #fff1f0;
+            color: #f5222d;
+        }
+        .layer-tab.layer-1.active {
+            background: #f5222d;
+            color: white;
+            border-color: #f5222d;
+        }
+
+        /* 视图切换Tab */
+        .view-tabs {
+            background: white;
+            border-radius: 8px 8px 0 0;
+            padding: 15px 20px 0 20px;
+            display: flex;
+            gap: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .view-tab {
+            padding: 10px 5px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .view-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .view-tab:hover {
+            color: var(--primary-color);
+        }
+
+        /* 内容区域 */
+        .content-area {
+            background: white;
+            border-radius: 0 0 8px 8px;
+            padding: 20px;
+        }
+
+        /* 知识点卡片 */
+        .knowledge-card {
+            background: var(--header-bg);
+            color: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+
+        .knowledge-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collapse-icon {
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* 题型标题 */
+        .question-type-header {
+            background: #d9ecf5;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            border-radius: 4px;
+            margin-bottom: 0;
+        }
+
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            border: 1px solid #e8e8e8;
+        }
+
+        .data-table thead {
+            background: #f5f5f5;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e8e8e8;
+            border-right: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        .data-table th:last-child,
+        .data-table td:last-child {
+            border-right: none;
+        }
+
+        .data-table th {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .data-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .data-table tbody tr td:first-child {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .view-detail-link {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .view-detail-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 分组栏样式 */
+        .group-bar {
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+
+        .group-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .group-bar-toggle {
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+
+        .group-bar-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        /* 按学生查看的表格 */
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .student-table thead {
+            background: #f5f5f5;
+        }
+
+        .student-table th,
+        .student-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .student-table th {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .student-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-completed {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-pending {
+            background: #fff7e6;
+            color: #faad14;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="#1890ff">
+                <circle cx="50" cy="50" r="45" stroke="#1890ff" stroke-width="5" fill="none"/>
+                <path d="M30 50 L50 70 L80 30" stroke="#1890ff" stroke-width="8" fill="none"/>
+            </svg>
+            兆涵科技 <span style="font-size: 14px; font-weight: normal; color: #666; margin-left: 5px;">Sigma Education</span>
+        </div>
+        <div style="margin-left: auto; display: flex; gap: 10px;">
+             <button style="background: #ff7a45; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-size: 13px; cursor: pointer;">生成报告</button>
+             <button style="background: var(--primary-color); color: white; border: none; padding: 6px 15px; border-radius: 4px; font-size: 13px; cursor: pointer;">查看数据</button>
+        </div>
+    </div>
+
+    <div class="back-link" onclick="history.back()">← 作业详情</div>
+
+    <div class="container">
+        <!-- 作业信息 -->
+        <div class="homework-info">
+            <div>
+                <div class="homework-title">12月29日智能作业</div>
+                <div class="homework-meta">
+                    <span>班级：初一2班</span>
+                    <span>科目：语文 统编版4年级 第二单元</span>
+                    <span>布置时间：2025-12-29 19:18:03</span>
+                    <span>截止时间：2025-12-31 18:36:00</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <div class="stats-box">
+                    <div class="stats-label">完成学生</div>
+                    <div class="stats-value">9/12</div>
+                    <div style="font-size: 12px; margin-top: 3px;">
+                        <a href="#" style="color: var(--primary-color); text-decoration: none;" onclick="showUnsubmittedStudents(event)">查看未提交学生名单</a>
+                    </div>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-label">平均分</div>
+                    <div class="stats-value completion">79%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 层级Tab -->
+        <div class="layer-tabs">
+            <div class="layer-tab layer-5 active" onclick="switchLayer(this, 'layer-5')">
+                90%-100% (挑战层)
+            </div>
+            <div class="layer-tab layer-4" onclick="switchLayer(this, 'layer-4')">
+                75%-89% (拔高层)
+            </div>
+            <div class="layer-tab layer-3" onclick="switchLayer(this, 'layer-3')">
+                60%-74% (良好层)
+            </div>
+            <div class="layer-tab layer-2" onclick="switchLayer(this, 'layer-2')">
+                40%-59% (提升层)
+            </div>
+            <div class="layer-tab layer-1" onclick="switchLayer(this, 'layer-1')">
+                0%-39% (基础层)
+            </div>
+        </div>
+
+        <!-- 视图切换Tab -->
+        <div class="view-tabs">
+            <div class="view-tab active" onclick="switchView(this, 'by-student')">按学生查看</div>
+            <div class="view-tab" onclick="switchView(this, 'by-question')">按题目查看</div>
+        </div>
+
+        <!-- 分组栏 -->
+        <div class="group-bar">
+            <div class="group-bar-left">
+                <span class="group-bar-toggle" onclick="toggleGroup(this)">▼</span>
+                <span>默认分组</span>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <!-- 按学生查看 -->
+            <div id="view-by-student">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">学生姓名</th>
+                            <th style="width: 10%;">学号</th>
+                            <th style="width: 40%;">作业内容</th>
+                            <th style="width: 6%;">分数</th>
+                            <th style="width: 7%;">错题数</th>
+                            <th style="width: 12%;">提交时间</th>
+                            <th style="width: 8%;">完成用时</th>
+                            <th style="width: 7%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 数据将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 按题目查看 -->
+            <div id="view-by-question" class="hidden">
+                <!-- 题型分组布局 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- 左列 -->
+                    <div>
+                        <!-- 选择题 -->
+                        <div class="question-type-header">选择题 3道</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">题号</th>
+                                    <th style="width: 20%;">平均分</th>
+                                    <th style="width: 25%;">平均得分率</th>
+                                    <th style="width: 20%;">平均时长</th>
+                                    <th style="width: 20%;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>4.2</td>
+                                    <td>84%</td>
+                                    <td>1分15秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>3.8</td>
+                                    <td>76%</td>
+                                    <td>1分32秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>4.5</td>
+                                    <td>90%</td>
+                                    <td>58秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 连线题 -->
+                        <div class="question-type-header" style="margin-top: 20px;">连线题 4道</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">题号</th>
+                                    <th style="width: 20%;">平均分</th>
+                                    <th style="width: 25%;">平均得分率</th>
+                                    <th style="width: 20%;">平均时长</th>
+                                    <th style="width: 20%;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>7.5</td>
+                                    <td>75%</td>
+                                    <td>2分18秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>8.2</td>
+                                    <td>82%</td>
+                                    <td>2分5秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>6.8</td>
+                                    <td>68%</td>
+                                    <td>2分45秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>9.0</td>
+                                    <td>90%</td>
+                                    <td>1分52秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 右列 -->
+                    <div>
+                        <!-- 填空题 -->
+                        <div class="question-type-header">填空题 2道</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">题号</th>
+                                    <th style="width: 20%;">平均分</th>
+                                    <th style="width: 25%;">平均得分率</th>
+                                    <th style="width: 20%;">平均时长</th>
+                                    <th style="width: 20%;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>6.5</td>
+                                    <td>65%</td>
+                                    <td>3分22秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>7.8</td>
+                                    <td>78%</td>
+                                    <td>2分58秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 判断题 -->
+                        <div class="question-type-header" style="margin-top: 20px;">判断题 5道</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">题号</th>
+                                    <th style="width: 20%;">平均分</th>
+                                    <th style="width: 25%;">平均得分率</th>
+                                    <th style="width: 20%;">平均时长</th>
+                                    <th style="width: 20%;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1.8</td>
+                                    <td>90%</td>
+                                    <td>35秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>1.6</td>
+                                    <td>80%</td>
+                                    <td>42秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>1.4</td>
+                                    <td>70%</td>
+                                    <td>48秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>1.9</td>
+                                    <td>95%</td>
+                                    <td>28秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>1.7</td>
+                                    <td>85%</td>
+                                    <td>38秒</td>
+                                    <td><a href="#" class="view-detail-link">查看详情</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前选中的层级
+        let currentLayer = 'layer-5';
+
+        // 不同层级的学生数据
+        const layerStudentData = {
+            'layer-5': [
+                { name: '张伟', id: '25101007', work: '选择题1道；阅读理解2题；看图说话1题；...', score: 95, errors: 1, time: '2025年7月15日 21:22:54', duration: '00:35:25', status: 'completed' },
+                { name: '王芳', id: '25101008', work: '选择题2道；阅读理解2题；看图说话1题；...', score: 98, errors: 0, time: '2025年7月15日 21:18:32', duration: '00:42:18', status: 'completed' },
+                { name: '李娜', id: '25101009', work: '选择题2道；阅读理解2题；看图说话1题；...', score: 92, errors: 2, time: '2025年7月15日 21:35:12', duration: '00:38:45', status: 'completed' }
+            ],
+            'layer-4': [
+                { name: '赵强', id: '25101010', work: '选择题2道；阅读理解2题；看图说话1题；...', score: 85, errors: 3, time: '2025年7月15日 21:25:48', duration: '00:45:22', status: 'completed' },
+                { name: '刘洋', id: '25101011', work: '选择题2道；阅读理解2题；看图说话1题；...', score: 82, errors: 4, time: '2025年7月15日 21:42:15', duration: '00:52:30', status: 'completed' }
+            ],
+            'layer-3': [
+                { name: '陈静', id: '25101012', work: '选择题1道；阅读理解2题；看图说话1题；...', score: 72, errors: 5, time: '2025年7月15日 21:38:25', duration: '00:48:15', status: 'completed' },
+                { name: '杨柳', id: '25101013', work: '选择题3道；阅读理解2题；看图说话1题；...', score: 68, errors: 6, time: '2025年7月15日 22:05:33', duration: '00:55:42', status: 'completed' },
+                { name: '黄勇', id: '25101014', work: '选择题3道；阅读理解2题；看图说话1题；...', score: 65, errors: 7, time: '2025年7月15日 22:12:18', duration: '01:02:35', status: 'completed' }
+            ],
+            'layer-2': [
+                { name: '吴磊', id: '25101015', work: '选择题3道；阅读理解2题；看图说话1题；...', score: 55, errors: 8, time: '2025年7月15日 22:28:45', duration: '01:15:22', status: 'completed' },
+                { name: '周杰', id: '25101016', work: '选择题3道；阅读理解2题；看图说话1题；...', score: '-', errors: '-', time: '-', duration: '-', status: 'pending' }
+            ],
+            'layer-1': [
+                { name: '郑辉', id: '25101017', work: '选择题1道；阅读理解2题；看图说话1题；...', score: '-', errors: '-', time: '-', duration: '-', status: 'grading' },
+                { name: '孙丽', id: '25101018', work: '选择题1道；阅读理解2题；看图说话1题；...', score: '-', errors: '-', time: '-', duration: '-', status: 'pending' }
+            ]
+        };
+
+        // 渲染学生表格
+        function renderStudentTable(layerId) {
+            const students = layerStudentData[layerId];
+            const tbody = document.querySelector('#view-by-student tbody');
+            
+            tbody.innerHTML = students.map(student => {
+                let actionHtml = '';
+                if (student.status === 'completed') {
+                    actionHtml = '<a href="#" class="view-detail-link">查看详情</a>';
+                } else if (student.status === 'grading') {
+                    actionHtml = '<span style="color: #faad14;">批改中</span>';
+                } else if (student.status === 'pending') {
+                    actionHtml = '<span style="color: #ff4d4f;">未提交</span>';
+                }
+                
+                return `
+                    <tr>
+                        <td>${student.name}</td>
+                        <td>${student.id}</td>
+                        <td>${student.work}</td>
+                        <td>${student.score}</td>
+                        <td>${student.errors}</td>
+                        <td>${student.time}</td>
+                        <td>${student.duration}</td>
+                        <td>${actionHtml}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 显示未提交学生名单（显示所有层级的未提交学生）
+        function showUnsubmittedStudents(event) {
+            event.preventDefault();
+            
+            // 收集所有层级的未提交学生
+            const allUnsubmitted = [];
+            for (const layerId in layerStudentData) {
+                const students = layerStudentData[layerId];
+                const unsubmitted = students.filter(s => s.status === 'pending' || s.status === 'grading');
+                allUnsubmitted.push(...unsubmitted);
+            }
+            
+            if (allUnsubmitted.length === 0) {
+                alert('所有学生都已完成作业！');
+            } else {
+                const names = allUnsubmitted.map(s => `${s.name}（${s.status === 'grading' ? '批改中' : '未提交'}）`).join('\n');
+                alert(`未提交学生名单（共${allUnsubmitted.length}人）：\n\n${names}`);
+            }
+        }
+
+        // 切换层级
+        function switchLayer(element, layerId) {
+            // 更新tab样式
+            const tabs = document.querySelectorAll('.layer-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+
+            currentLayer = layerId;
+            
+            // 更新学生数据
+            renderStudentTable(layerId);
+            
+            console.log('切换到层级:', layerId);
+        }
+
+        // 页面加载时初始化数据
+        window.addEventListener('DOMContentLoaded', function() {
+            renderStudentTable(currentLayer);
+        });
+
+        // 切换视图
+        function switchView(element, viewType) {
+            // 更新tab样式
+            const tabs = document.querySelectorAll('.view-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+
+            // 切换内容
+            const byQuestion = document.getElementById('view-by-question');
+            const byStudent = document.getElementById('view-by-student');
+            const groupBar = document.querySelector('.group-bar');
+
+            if (viewType === 'by-question') {
+                byStudent.classList.add('hidden');
+                byQuestion.classList.remove('hidden');
+                // 隐藏分组栏
+                if (groupBar) groupBar.style.display = 'none';
+            } else {
+                byQuestion.classList.add('hidden');
+                byStudent.classList.remove('hidden');
+                // 显示分组栏
+                if (groupBar) groupBar.style.display = 'flex';
+            }
+        }
+
+        // 折叠/展开知识点
+        function toggleCollapse(element) {
+            const card = element.closest('.knowledge-card');
+            const table = card.nextElementSibling;
+            
+            if (table && table.classList.contains('data-table')) {
+                if (table.style.display === 'none') {
+                    table.style.display = 'table';
+                    element.textContent = '▲';
+                } else {
+                    table.style.display = 'none';
+                    element.textContent = '▼';
+                }
+            }
+        }
+
+        // 切换分组折叠状态
+        function toggleGroup(element) {
+            element.classList.toggle('collapsed');
+            const contentArea = document.querySelector('.content-area');
+            if (element.classList.contains('collapsed')) {
+                contentArea.style.display = 'none';
+            } else {
+                contentArea.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
